@@ -35,10 +35,7 @@
     function getReactionElements() {
         return Array.from(document.querySelectorAll('[data-autotest-id="reaction"]'));
     }
-
-  function getStoichElement() {
-    return document.querySelector('[data-autotest-id="stoichiometry"]');
-  }
+    
 
     function getReactionImageHtmlForIndex(reactionIndex) {
         const reactions = getReactionElements();
@@ -158,11 +155,7 @@
 
         return `${formatNumber(num, 3)} g`;
     }
-
-  function roleLabel(role) {
-    if (!role) return "—";
-    return role.charAt(0).toUpperCase() + role.slice(1);
-  }
+    
 
     function formatNumber(value, digits = 2) {
         if (value == null || value === "") return "—";
@@ -232,6 +225,8 @@
             p => Number(p.reactionIndex) === Number(reactionIndex)
         );
 
+        const experimentId = payload?.identifier || "Unknown experiment";
+
         if (!payload?.rows?.length) {
             alert("No stoichiometry data available yet for this reaction.");
             return;
@@ -241,9 +236,9 @@
         const rowsHtml = buildRowsHtml(payload.rows);
 
         const html = `
-      <html>
+      <html lang="es">
         <head>
-          <title>${escapeHtml(payload.title || "Stoichiometry Sheet")}</title>
+         <title>${escapeHtml(experimentId)} - ${escapeHtml(payload.title || "Stoichiometry Sheet")}</title>
           <style>
             @page {
               size: A4 portrait;
@@ -261,11 +256,47 @@
               width: 100%;
             }
 
-            .title {
-              font-size: 18px;
-              font-weight: 700;
-              margin-bottom: 8px;
-            }
+            .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.header-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.header-right {
+  flex: 0 0 auto;
+  text-align: right;
+  padding-left: 16px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 2px;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.experiment-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.experiment-id {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
 
             .meta {
               font-size: 11px;
@@ -379,12 +410,21 @@ th {
         </head>
         <body>
           <div class="page">
-            <div class="title">${escapeHtml(payload.title || "Stoichiometry Sheet")}</div>
-            <div class="meta">
-              <div><strong>Source:</strong> ${escapeHtml(location.href)}</div>
-              <div><strong>Printed:</strong> ${escapeHtml(new Date().toLocaleString())}</div>
-              <div><strong>Reaction index:</strong> ${reactionIndex + 1}</div>
-            </div>
+           <div class="header">
+  <div class="header-left">
+    <div class="title">${escapeHtml(payload.title || "Stoichiometry Sheet")}</div>
+  </div>
+  <div class="header-right">
+    <div class="experiment-label">Experiment ID</div>
+    <div class="experiment-id">${escapeHtml(experimentId)}</div>
+  </div>
+</div>
+
+<div class="meta">
+  <div><strong>Source:</strong> ${escapeHtml(location.href)}</div>
+  <div><strong>Printed:</strong> ${escapeHtml(new Date().toLocaleString())}</div>
+  <div><strong>Reaction index:</strong> ${reactionIndex + 1}</div>
+</div>
 
             ${imageHtml ? `<div class="scheme">${imageHtml}</div>` : ""}
 
