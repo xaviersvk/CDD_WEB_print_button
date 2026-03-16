@@ -70,25 +70,37 @@
       </svg>
     `;
 
+        const svg = btn.querySelector("svg");
+        if (svg) {
+            svg.style.display = "block";
+            svg.style.width = "14px";
+            svg.style.height = "14px";
+            svg.style.flexShrink = "0";
+        }
+
         btn.style.position = "absolute";
-        btn.style.top = "6px";
-        btn.style.right = "88px";
-        btn.style.width = "32px";
-        btn.style.height = "32px";
-        btn.style.display = "flex";
+        btn.style.top = "8px";
+        btn.style.right = "70px";
+        btn.style.width = "28px";
+        btn.style.height = "26px";
+        btn.style.minWidth = "20px";
+        btn.style.minHeight = "20px";
+        btn.style.display = "inline-flex";
         btn.style.alignItems = "center";
         btn.style.justifyContent = "center";
         btn.style.padding = "0";
-        btn.style.border = "1px solid #cfd4dc";
-        btn.style.borderRadius = "6px";
+        btn.style.margin = "0";
+        btn.style.boxSizing = "border-box";
+        btn.style.border = "1px solid #d1d5db";
+        btn.style.borderRadius = "8px";
         btn.style.background = "#ffffff";
         btn.style.color = "#6b7280";
         btn.style.cursor = "pointer";
         btn.style.zIndex = "20";
+        btn.style.verticalAlign = "middle";
+        btn.style.lineHeight = "1";
         btn.style.boxShadow = "0 1px 2px rgba(0,0,0,0.08)";
         btn.style.transition = "background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease";
-
-
 
         btn.addEventListener("mouseenter", () => {
             btn.style.background = "#f9fafb";
