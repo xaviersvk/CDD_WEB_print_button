@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "CDD Stoichiometry Print Button",
+  "version": "1.0.0",
+  "description": "Adds a print button into CDD reaction block and prints a custom stoichiometry sheet.",
+  "permissions": [],
+  "host_permissions": [
+    "https://app.collaborativedrug.com/*",
+    "https://eu.collaborativedrug.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://app.collaborativedrug.com/*",
+        "https://eu.collaborativedrug.com/*"
+      ],
+      "js": [ "content.js" ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [ "inject.js" ],
+      "matches": [
+        "https://app.collaborativedrug.com/*",
+        "https://eu.collaborativedrug.com/*"
+      ]
+    }
+  ]
+}
