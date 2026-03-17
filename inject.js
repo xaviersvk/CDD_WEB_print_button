@@ -17,6 +17,137 @@
     );
   }
 
+    function isFirefox() {
+        return typeof navigator !== "undefined" &&
+            /firefox/i.test(navigator.userAgent || "");
+    }
+
+    function waitForImages(doc, callback) {
+        const imgs = Array.from(doc.images || []);
+        if (!imgs.length) {
+            setTimeout(callback, 250);
+            return;
+        }
+
+        let remaining = imgs.length;
+
+        const done = () => {
+            remaining -= 1;
+            if (remaining <= 0) {
+                setTimeout(callback, 250);
+            }
+        };
+
+        imgs.forEach((img) => {
+            if (img.complete) {
+                done();
+            } else {
+                img.addEventListener("load", done, { once: true });
+                img.addEventListener("error", done, { once: true });
+            }
+        });
+    }
+
+    function printHtmlViaIframe(html) {
+        if (!html) return;
+
+        const oldFrame = document.getElementById("cdd-stoich-print-frame");
+        if (oldFrame) oldFrame.remove();
+
+        const iframe = document.createElement("iframe");
+        iframe.id = "cdd-stoich-print-frame";
+        iframe.style.position = "fixed";
+        iframe.style.right = "0";
+        iframe.style.bottom = "0";
+        iframe.style.width = "0";
+        iframe.style.height = "0";
+        iframe.style.border = "0";
+        iframe.style.visibility = "hidden";
+
+        document.documentElement.appendChild(iframe);
+
+        const win = iframe.contentWindow;
+        const doc = win?.document;
+
+        if (!win || !doc) {
+            console.warn("[CDD Stoich Print Plugin] iframe unavailable");
+            iframe.remove();
+            return;
+        }
+
+        doc.open();
+        doc.write(html);
+        doc.close();
+
+        waitForImages(doc, () => {
+            try {
+                win.focus();
+                win.print();
+            } catch (err) {
+                console.error("[CDD Stoich Print Plugin] iframe print failed", err);
+            } finally {
+                setTimeout(() => iframe.remove(), 1500);
+            }
+        });
+    }
+
+    function printHtmlViaPopup(html) {
+        if (!html) return;
+
+        const printWindow = window.open(
+            "",
+            "cdd_stoich_print_window",
+            "width=1100,height=800,noopener=no,noreferrer=no"
+        );
+
+        if (!printWindow) {
+            console.warn("[CDD Stoich Print Plugin] popup blocked");
+            return;
+        }
+
+        const doc = printWindow.document;
+        doc.open();
+        doc.write(html);
+        doc.close();
+
+        waitForImages(doc, () => {
+            try {
+                printWindow.focus();
+                printWindow.print();
+            } catch (err) {
+                console.error("[CDD Stoich Print Plugin] popup print failed", err);
+            }
+
+            const closeWindow = () => {
+                try {
+                    printWindow.close();
+                } catch (_) {}
+            };
+
+            printWindow.addEventListener("afterprint", closeWindow, { once: true });
+
+            // fallback, keby afterprint neprišiel
+            setTimeout(closeWindow, 3000);
+        });
+    }
+
+    window.addEventListener("message", (event) => {
+        if (event.source !== window) return;
+
+        const data = event.data;
+        if (!data || data.source !== "CDD_STOICH_PLUGIN") return;
+        if (data.type !== "CDD_STOICH_PRINT_REQUEST") return;
+
+        const html = data.payload?.html;
+        if (!html) return;
+
+        if (isFirefox()) {
+            printHtmlViaIframe(html);
+        } else {
+             printHtmlViaPopup(html);
+        }
+    });
+
   function normalizeFeatures(featureMap) {
     if (!featureMap) return [];
     if (Array.isArray(featureMap)) return featureMap;
@@ -33,17 +164,6 @@
     }
 
 
-    window.addEventListener("message", (event) => {
-        if (event.source !== window) return;
-
-        const data = event.data;
-        if (!data || data.source !== "CDD_STOICH_PLUGIN") return;
-        if (data.type !== "CDD_STOICH_PRINT_REQUEST") return;
-
-        const html = data.payload?.html;
-
-        // printHtmlViaIframe(html);
-    });
 
   function getReactionTitle(payload) {
     return (

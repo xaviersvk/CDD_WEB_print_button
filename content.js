@@ -10,16 +10,26 @@
     return /\/vaults\/\d+\/eln\/entries\/\d+/.test(url);
   }
 
-  function injectPageScript() {
-    if (document.getElementById("cdd-stoich-print-inject-script")) return;
+    function injectPageScript() {
+        if (document.getElementById("cdd-stoich-print-inject-script")) return;
 
-    const script = document.createElement("script");
-    script.id = "cdd-stoich-print-inject-script";
-    script.src = chrome.runtime.getURL("inject.js");
-    script.onload = () => script.remove();
+        const EXT_RUNTIME =
+            (typeof browser !== "undefined" && browser.runtime) ||
+            (typeof chrome !== "undefined" && chrome.runtime) ||
+            null;
 
-    (document.head || document.documentElement).appendChild(script);
-  }
+        if (!EXT_RUNTIME) {
+            console.error("[CDD Stoich Print Plugin] runtime API unavailable");
+            return;
+        }
+
+        const script = document.createElement("script");
+        script.id = "cdd-stoich-print-inject-script";
+        script.src = EXT_RUNTIME.getURL("inject.js");
+        script.onload = () => script.remove();
+
+        (document.head || document.documentElement).appendChild(script);
+    }
 
 
   function escapeHtml(value) {
