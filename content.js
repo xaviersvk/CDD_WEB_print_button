@@ -171,7 +171,7 @@
         const num = Number(value);
         if (Number.isNaN(num)) return escapeHtml(value);
 
-        if (num < 0.07) {
+        if (num < 0.1) {
             return `${formatNumber(num * 1000, 2)} mg`;
         }
 
