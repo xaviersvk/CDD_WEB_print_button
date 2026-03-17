@@ -92,7 +92,7 @@
         btn.style.top = "8px";
         btn.style.right = "70px";
         btn.style.width = "28px";
-        btn.style.height = "26px";
+        btn.style.height = "25px";
         btn.style.minWidth = "20px";
         btn.style.minHeight = "20px";
         btn.style.display = "inline-flex";
@@ -171,7 +171,7 @@
         const num = Number(value);
         if (Number.isNaN(num)) return escapeHtml(value);
 
-        if (num < 0.01) {
+        if (num < 0.07) {
             return `${formatNumber(num * 1000, 2)} mg`;
         }
 
