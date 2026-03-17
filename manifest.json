@@ -14,17 +14,26 @@
         "https://app.collaborativedrug.com/*",
         "https://eu.collaborativedrug.com/*"
       ],
-      "js": [ "content.js" ],
+      "js": ["content.js"],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": [ "inject.js" ],
+      "resources": ["inject.js"],
       "matches": [
         "https://app.collaborativedrug.com/*",
         "https://eu.collaborativedrug.com/*"
       ]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "cdd-print-button@pharmtheon.io",
+      "data_collection_permissions": {
+        "required": ["none"],
+        "optional": []
+      }
+    }
+  }
 }
